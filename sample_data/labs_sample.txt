@@ -1,0 +1,4 @@
+Lab Name,Capacity
+Lab A,2
+Lab B,2
+Lab C,2

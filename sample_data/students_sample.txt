@@ -1,0 +1,4 @@
+Roll No,Name,Preference 1,Preference 2
+23A01,Aarav,Lab A,Lab B
+23A02,Diya,Lab B,Lab C
+23A03,Rohan,Lab C,Lab A

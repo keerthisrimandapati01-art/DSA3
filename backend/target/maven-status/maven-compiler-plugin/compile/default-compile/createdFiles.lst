@@ -1,0 +1,16 @@
+com\labmatch\algorithm\BitmaskDP$Choice.class
+com\labmatch\service\ExcelService.class
+com\labmatch\algorithm\SeatingOptimizer$SeatAssignment.class
+com\labmatch\algorithm\HopcroftKarp$Match.class
+com\labmatch\algorithm\SeatingOptimizer.class
+com\labmatch\Main$Allocation.class
+com\labmatch\algorithm\HopcroftKarp$Seat.class
+com\labmatch\model\Lab.class
+com\labmatch\algorithm\BitmaskDP.class
+com\labmatch\Main.class
+com\labmatch\model\Student.class
+com\labmatch\algorithm\BitmaskDP$Result.class
+com\labmatch\algorithm\HopcroftKarp.class
+com\labmatch\algorithm\SeatingOptimizer$PhysicalSeat.class
+com\labmatch\algorithm\KMP.class
+com\labmatch\service\TextFileService.class

@@ -1,0 +1,5413 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>LabMatch — Smart Lab Allocation</title>
+
+
+    <style>
+
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background: #f4f7fc;
+            color: #172554;
+
+            min-height: 100vh;
+        }
+
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+
+        button {
+            cursor: pointer;
+        }
+
+
+        /* =====================================================
+           APP
+        ===================================================== */
+
+        .app {
+            min-height: 100vh;
+            display: flex;
+        }
+
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+
+        .sidebar {
+            width: 212px;
+            min-height: 100vh;
+
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #07142f 0%,
+                    #0c1b3e 100%
+                );
+
+            color: white;
+
+            padding: 22px 13px;
+
+            z-index: 100;
+        }
+
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+
+            padding: 4px 10px 23px;
+
+            border-bottom:
+                1px solid
+                rgba(255,255,255,0.08);
+        }
+
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+
+            border-radius: 11px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2f75ff,
+                    #6045ff
+                );
+
+            font-size: 21px;
+        }
+
+
+        .brand-title {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -0.4px;
+        }
+
+
+        .brand-subtitle {
+            font-size: 9px;
+            color: #93a6d1;
+            margin-top: 2px;
+        }
+
+
+        .nav {
+            margin-top: 20px;
+        }
+
+
+        .nav-item {
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+
+            gap: 13px;
+
+            padding: 13px 14px;
+
+            margin-bottom: 5px;
+
+            border-radius: 9px;
+
+            color: #b9c7e7;
+
+            font-size: 13px;
+
+            transition:
+                0.2s ease;
+        }
+
+
+        .nav-item:hover {
+            background:
+                rgba(255,255,255,0.08);
+
+            color: white;
+        }
+
+
+        .nav-item.active {
+            background:
+                linear-gradient(
+                    135deg,
+                    #2875ff,
+                    #573cff
+                );
+
+            color: white;
+
+            box-shadow:
+                0 8px 20px
+                rgba(48,77,255,0.25);
+        }
+
+
+        .nav-icon {
+            width: 17px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 22px;
+            left: 23px;
+
+            color: #6880b3;
+
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        .main {
+            margin-left: 212px;
+            width: calc(100% - 212px);
+            min-height: 100vh;
+        }
+
+
+        /* =====================================================
+           TOP BAR
+        ===================================================== */
+
+        .topbar {
+            height: 68px;
+
+            background: white;
+
+            border-bottom:
+                1px solid #e8edf5;
+
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+
+            padding: 0 30px;
+
+            gap: 18px;
+        }
+
+
+        .backend-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 9px 14px;
+
+            border:
+                1px solid #e7ecf5;
+
+            border-radius: 22px;
+
+            color: #7b8aa8;
+
+            font-size: 11px;
+        }
+
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #20c985;
+        }
+
+
+        .status-dot.offline {
+            background: #ef4444;
+        }
+
+
+        .admin {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+
+        .admin-avatar {
+            width: 35px;
+            height: 35px;
+
+            border-radius: 50%;
+
+            background: #e7efff;
+
+            color: #315fd7;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-weight: 800;
+            font-size: 12px;
+        }
+
+
+        .admin-name {
+            font-size: 12px;
+            font-weight: 700;
+            color: #18233d;
+        }
+
+
+        .admin-role {
+            font-size: 10px;
+            color: #8a98b3;
+            margin-top: 2px;
+        }
+
+
+        /* =====================================================
+           PAGE CONTAINER
+        ===================================================== */
+
+        .content {
+            padding: 28px;
+        }
+
+
+        .page {
+            display: none;
+        }
+
+
+        .page.active {
+            display: block;
+        }
+
+
+        .page-heading {
+            margin-bottom: 24px;
+        }
+
+
+        .page-title {
+            font-size: 25px;
+            font-weight: 800;
+
+            color: #172b59;
+
+            letter-spacing: -0.6px;
+        }
+
+
+        .page-subtitle {
+            margin-top: 5px;
+
+            color: #8291b0;
+
+            font-size: 12px;
+        }
+
+
+        /* =====================================================
+           CARDS
+        ===================================================== */
+
+        .card {
+            background: white;
+
+            border:
+                1px solid #e8edf5;
+
+            border-radius: 17px;
+
+            padding: 21px;
+
+            box-shadow:
+                0 8px 30px
+                rgba(31,52,91,0.035);
+        }
+
+
+        /* =====================================================
+           DASHBOARD STATS
+        ===================================================== */
+
+        .stats-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 16px;
+
+            margin-bottom: 22px;
+        }
+
+
+        .stat-card {
+            min-height: 105px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+
+        .stat-label {
+            font-size: 11px;
+            color: #8b99b5;
+        }
+
+
+        .stat-value {
+            font-size: 25px;
+
+            font-weight: 800;
+
+            color: #152a58;
+
+            margin-top: 8px;
+        }
+
+
+        .stat-icon {
+            width: 37px;
+            height: 37px;
+
+            border-radius: 11px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #edf3ff;
+
+            font-size: 17px;
+        }
+
+
+        /* =====================================================
+           HERO
+        ===================================================== */
+
+        .hero {
+            padding: 25px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            min-height: 135px;
+        }
+
+
+        .hero-title {
+            font-size: 15px;
+            font-weight: 800;
+
+            color: #142956;
+        }
+
+
+        .hero-text {
+            font-size: 11px;
+            color: #8593ae;
+
+            margin-top: 7px;
+        }
+
+
+        .hero-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+
+        /* =====================================================
+           BUTTONS
+        ===================================================== */
+
+        .btn {
+            border: none;
+
+            border-radius: 9px;
+
+            padding: 11px 17px;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            transition:
+                transform 0.15s ease,
+                box-shadow 0.15s ease,
+                opacity 0.15s ease;
+        }
+
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+
+        .btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+
+        .btn-primary {
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2877ff,
+                    #5b3cff
+                );
+
+            box-shadow:
+                0 8px 18px
+                rgba(57,82,255,0.22);
+        }
+
+
+        .btn-light {
+            color: #345bb5;
+
+            background: #edf3ff;
+        }
+
+
+        .btn-danger {
+            color: #b42318;
+            background: #fff0ef;
+        }
+
+
+        .btn-success {
+            color: #087443;
+            background: #eafaf2;
+        }
+
+
+        /* =====================================================
+           IMPORT
+        ===================================================== */
+
+        .upload-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 20px;
+        }
+
+
+        .upload-card {
+            min-height: 240px;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        .upload-icon {
+            width: 48px;
+            height: 48px;
+
+            border-radius: 13px;
+
+            background: #edf3ff;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 23px;
+
+            margin-bottom: 15px;
+        }
+
+
+        .upload-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #18315e;
+        }
+
+
+        .upload-description {
+            font-size: 11px;
+            line-height: 1.7;
+
+            color: #8795b0;
+
+            margin-top: 7px;
+
+            flex: 1;
+        }
+
+
+        .file-input {
+            display: none;
+        }
+
+
+        .upload-button {
+            width: fit-content;
+        }
+
+
+        .upload-status {
+            margin-top: 13px;
+
+            font-size: 11px;
+
+            color: #6f7f9f;
+        }
+
+
+        .upload-status.success {
+            color: #087443;
+        }
+
+
+        .upload-status.error {
+            color: #b42318;
+        }
+
+
+        /* =====================================================
+           TABLE
+        ===================================================== */
+
+        .table-card {
+            overflow: hidden;
+        }
+
+
+        .table-header {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 16px;
+        }
+
+
+        .table-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: #18305e;
+        }
+
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+
+        th {
+            background: #f6f8fc;
+
+            color: #71809f;
+
+            font-size: 10px;
+
+            text-align: left;
+
+            padding: 11px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.3px;
+        }
+
+
+        td {
+            padding: 11px;
+
+            border-bottom:
+                1px solid #eef1f6;
+
+            font-size: 11px;
+
+            color: #384866;
+        }
+
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+
+        .badge {
+            display: inline-block;
+
+            padding: 5px 9px;
+
+            border-radius: 20px;
+
+            background: #edf3ff;
+
+            color: #315fc5;
+
+            font-size: 9px;
+
+            font-weight: 800;
+        }
+
+
+        .badge-success {
+            background: #e9faf2;
+            color: #087443;
+        }
+
+
+        .badge-warning {
+            background: #fff6df;
+            color: #946200;
+        }
+
+
+        /* =====================================================
+           ALLOCATION
+        ===================================================== */
+
+        .allocation-top {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .allocation-stat {
+            padding: 17px;
+        }
+
+
+        .allocation-stat-label {
+            font-size: 10px;
+            color: #8794ad;
+        }
+
+
+        .allocation-stat-value {
+            margin-top: 7px;
+
+            font-size: 21px;
+
+            font-weight: 800;
+
+            color: #172d5d;
+        }
+
+
+        .allocation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 17px;
+        }
+
+
+        /* =====================================================
+           SEATING PLAN
+        ===================================================== */
+
+        .seating-controls {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .select-label {
+            font-size: 12px;
+            font-weight: 800;
+            color: #20365e;
+        }
+
+
+        .lab-select {
+            min-width: 190px;
+
+            padding: 10px 12px;
+
+            border:
+                1px solid #dce3ef;
+
+            border-radius: 8px;
+
+            background: white;
+
+            color: #24365d;
+
+            outline: none;
+        }
+
+
+        .view-tabs {
+            display: flex;
+            gap: 6px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .view-tab {
+            border:
+                1px solid #e0e7f2;
+
+            background: white;
+
+            color: #71809e;
+
+            border-radius: 8px;
+
+            padding: 8px 13px;
+
+            font-size: 10px;
+
+            font-weight: 700;
+        }
+
+
+        .view-tab.active {
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #3178ff,
+                    #593dff
+                );
+
+            border-color: transparent;
+        }
+
+
+        .seating-summary {
+            display: grid;
+
+            grid-template-columns:
+                1.5fr 1fr 1fr;
+
+            gap: 15px;
+
+            margin-bottom: 17px;
+        }
+
+
+        .lab-info-card {
+            padding: 17px;
+        }
+
+
+        .lab-info-label {
+            font-size: 10px;
+            color: #8997b1;
+        }
+
+
+        .lab-info-value {
+            font-size: 18px;
+            font-weight: 800;
+
+            color: #1a315d;
+
+            margin-top: 6px;
+        }
+
+
+        /* =====================================================
+           3D ROOM
+        ===================================================== */
+
+        .room-wrapper {
+            position: relative;
+
+            min-height: 600px;
+
+            padding: 30px;
+
+            overflow: auto;
+
+            border-radius: 18px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #e8edf5,
+                    #dce3ed
+                );
+
+            border:
+                1px solid #d4dce9;
+
+            perspective: 1100px;
+        }
+
+
+        .room-title {
+            position: sticky;
+            left: 0;
+
+            z-index: 5;
+
+            width: fit-content;
+
+            margin: 0 auto 28px;
+
+            padding: 11px 28px;
+
+            border-radius: 6px;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #472817,
+                    #63381e
+                );
+
+            box-shadow:
+                0 7px 0 #392013,
+                0 14px 24px
+                rgba(0,0,0,0.16);
+
+            font-size: 15px;
+
+            font-weight: 900;
+
+            letter-spacing: 0.5px;
+        }
+
+
+        .room-floor {
+            min-width: 650px;
+
+            width: fit-content;
+
+            margin: auto;
+
+            padding: 10px 25px 50px;
+
+            transform:
+                rotateX(2deg);
+
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(255,255,255,0.16) 0,
+                    rgba(255,255,255,0.16) 1px,
+                    transparent 1px,
+                    transparent 40px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(255,255,255,0.16) 0,
+                    rgba(255,255,255,0.16) 1px,
+                    transparent 1px,
+                    transparent 40px
+                );
+        }
+
+
+        .seat-grid {
+            display: grid;
+
+            gap: 34px 32px;
+
+            justify-content: center;
+
+            align-items: start;
+        }
+
+
+        .seat-wrapper {
+            width: 112px;
+
+            height: 88px;
+
+            position: relative;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.18s ease;
+        }
+
+
+        .seat-wrapper:hover {
+            transform:
+                translateY(-5px)
+                scale(1.025);
+
+            z-index: 10;
+        }
+
+
+        .desk {
+            position: relative;
+
+            width: 112px;
+            height: 49px;
+
+            border-radius: 4px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #bd7836,
+                    #a9642b
+                );
+
+            border:
+                1px solid #91501e;
+
+            box-shadow:
+                0 7px 0 #81501f,
+                0 12px 15px
+                rgba(51,35,21,0.20);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        .desk-label {
+            background: #fffdf7;
+
+            padding: 5px 10px;
+
+            border-radius: 3px;
+
+            color: #263653;
+
+            font-size: 8px;
+
+            font-weight: 900;
+
+            letter-spacing: 0.2px;
+
+            max-width: 92px;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+
+        .chair {
+            width: 34px;
+            height: 25px;
+
+            position: absolute;
+
+            left: 50%;
+
+            transform:
+                translateX(-50%);
+
+            bottom: 0;
+
+            border-radius: 4px 4px 7px 7px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #1c2941,
+                    #111b2d
+                );
+
+            box-shadow:
+                0 5px 7px
+                rgba(0,0,0,0.17);
+        }
+
+
+        .seat-empty .desk {
+            background:
+                linear-gradient(
+                    180deg,
+                    #bdc8d7,
+                    #aab6c6
+                );
+
+            border-color: #99a7ba;
+
+            box-shadow:
+                0 7px 0 #98a4b5;
+        }
+
+
+        .seat-empty .chair {
+            background:
+                #7e8999;
+
+            opacity: 0.55;
+        }
+
+
+        .seat-highlight {
+            animation:
+                pulseSeat 1s ease-in-out infinite;
+        }
+
+
+        @keyframes pulseSeat {
+
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.08);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+
+        /* =====================================================
+           LIST VIEW
+        ===================================================== */
+
+        .list-view {
+            display: none;
+        }
+
+
+        .list-view.active {
+            display: block;
+        }
+
+
+        .room-view {
+            display: block;
+        }
+
+
+        .room-view.hidden {
+            display: none;
+        }
+
+
+        /* =====================================================
+           FIND STUDENT
+        ===================================================== */
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .search-input {
+            flex: 1;
+
+            padding: 12px 14px;
+
+            border:
+                1px solid #dce4ef;
+
+            border-radius: 9px;
+
+            outline: none;
+
+            color: #24365c;
+
+            background: white;
+        }
+
+
+        .search-input:focus {
+            border-color: #7194ff;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(72,104,255,0.08);
+        }
+
+
+        .student-result {
+            display: none;
+        }
+
+
+        .student-result.show {
+            display: block;
+        }
+
+
+        .result-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 12px;
+
+            margin-top: 15px;
+        }
+
+
+        .result-item {
+            padding: 15px;
+
+            background: #f7f9fd;
+
+            border-radius: 11px;
+        }
+
+
+        .result-label {
+            color: #8794ad;
+            font-size: 9px;
+        }
+
+
+        .result-value {
+            color: #1b315e;
+
+            font-weight: 800;
+
+            font-size: 13px;
+
+            margin-top: 5px;
+        }
+
+
+        /* =====================================================
+           BRANCH ANALYSIS
+        ===================================================== */
+
+        .analysis-grid {
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 20px;
+        }
+
+
+        .branch-row {
+            margin-bottom: 17px;
+        }
+
+
+        .branch-row:last-child {
+            margin-bottom: 0;
+        }
+
+
+        .branch-top {
+            display: flex;
+            justify-content: space-between;
+
+            margin-bottom: 7px;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            color: #455575;
+        }
+
+
+        .bar-bg {
+            height: 9px;
+
+            background: #edf1f7;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+        }
+
+
+        .bar {
+            height: 100%;
+
+            border-radius: 20px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #3679ff,
+                    #6641ff
+                );
+
+            transition:
+                width 0.5s ease;
+        }
+
+
+        /* =====================================================
+           REPORT
+        ===================================================== */
+
+        .report-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 17px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .report-card {
+            padding: 20px;
+        }
+
+
+        .report-number {
+            font-size: 26px;
+
+            font-weight: 900;
+
+            color: #18305f;
+
+            margin-top: 7px;
+        }
+
+
+        /* =====================================================
+           EMPTY STATE
+        ===================================================== */
+
+        .empty-state {
+            padding: 55px 20px;
+
+            text-align: center;
+
+            color: #8997b1;
+        }
+
+
+        .empty-icon {
+            font-size: 38px;
+            margin-bottom: 12px;
+        }
+
+
+        .empty-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: #445473;
+        }
+
+
+        .empty-text {
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+
+        /* =====================================================
+           TOAST
+        ===================================================== */
+
+        .toast-container {
+            position: fixed;
+
+            right: 25px;
+            bottom: 25px;
+
+            z-index: 1000;
+        }
+
+
+        .toast {
+            min-width: 260px;
+
+            background: #17243e;
+
+            color: white;
+
+            padding: 13px 17px;
+
+            border-radius: 10px;
+
+            box-shadow:
+                0 15px 35px
+                rgba(0,0,0,0.2);
+
+            font-size: 11px;
+
+            margin-top: 8px;
+
+            animation:
+                toastIn 0.25s ease;
+        }
+
+
+        .toast.error {
+            background: #8d2929;
+        }
+
+
+        @keyframes toastIn {
+
+            from {
+                transform:
+                    translateY(10px);
+
+                opacity: 0;
+            }
+
+            to {
+                transform:
+                    translateY(0);
+
+                opacity: 1;
+            }
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 1000px) {
+
+            .stats-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .allocation-top {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .upload-grid,
+            .analysis-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                width: 70px;
+            }
+
+            .brand-title,
+            .brand-subtitle,
+            .nav-item span,
+            .sidebar-footer {
+                display: none;
+            }
+
+            .brand {
+                justify-content: center;
+                padding-left: 0;
+                padding-right: 0;
+            }
+
+            .nav-item {
+                justify-content: center;
+                padding: 13px 5px;
+            }
+
+            .main {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+            }
+
+            .content {
+                padding: 17px;
+            }
+
+            .topbar {
+                padding: 0 15px;
+            }
+
+            .stats-grid,
+            .allocation-top,
+            .report-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-logo">
+                🎓
+            </div>
+
+            <div>
+
+                <div class="brand-title">
+                    LabMatch
+                </div>
+
+                <div class="brand-subtitle">
+                    Smart Lab Allocation
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <nav class="nav">
+
+            <div
+                class="nav-item active"
+                data-page="dashboard"
+            >
+                <div class="nav-icon">⌂</div>
+                <span>Dashboard</span>
+            </div>
+
+
+            <div
+                class="nav-item"
+                data-page="import"
+            >
+                <div class="nav-icon">⇧</div>
+                <span>Import Data</span>
+            </div>
+
+
+            <div
+                class="nav-item"
+                data-page="allocation"
+                id="runAllocationNav"
+            >
+                <div class="nav-icon">⚡</div>
+                <span>Run Allocation</span>
+            </div>
+
+
+            <div
+                class="nav-item"
+                data-page="seating"
+            >
+                <div class="nav-icon">▦</div>
+                <span>Seating Plan</span>
+            </div>
+
+
+            <div
+                class="nav-item"
+                data-page="find"
+            >
+                <div class="nav-icon">⌕</div>
+                <span>Find Student</span>
+            </div>
+
+
+            <div
+                class="nav-item"
+                data-page="analysis"
+            >
+                <div class="nav-icon">▥</div>
+                <span>Branch Analysis</span>
+            </div>
+
+
+            <div
+                class="nav-item"
+                data-page="report"
+            >
+                <div class="nav-icon">▤</div>
+                <span>Reports</span>
+            </div>
+
+        </nav>
+
+
+        <div class="sidebar-footer">
+
+            "Efficient allocation<br>
+            for a smarter tomorrow"
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="main">
+
+
+        <!-- =================================================
+             TOP BAR
+        ================================================== -->
+
+        <header class="topbar">
+
+            <div class="backend-status">
+
+                <div
+                    class="status-dot"
+                    id="statusDot"
+                ></div>
+
+                <span id="statusText">
+                    Checking backend...
+                </span>
+
+            </div>
+
+
+            <div class="admin">
+
+                <div class="admin-avatar">
+                    NG
+                </div>
+
+                <div>
+
+                    <div class="admin-name">
+                        N. Greeshma
+                    </div>
+
+                    <div class="admin-role">
+                        Admin
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+
+        <section class="content">
+
+
+            <!-- =================================================
+                 DASHBOARD
+            ================================================== -->
+
+            <div
+                class="page active"
+                id="dashboard"
+            >
+
+                <div class="page-heading">
+
+                    <h1 class="page-title">
+                        Dashboard
+                    </h1>
+
+                    <p class="page-subtitle">
+                        Smart student-to-lab allocation using maximum bipartite matching.
+                    </p>
+
+                </div>
+
+
+                <div class="stats-grid">
+
+
+                    <div class="card stat-card">
+
+                        <div>
+
+                            <div class="stat-label">
+                                Students
+                            </div>
+
+                            <div
+                                class="stat-value"
+                                id="dashStudents"
+                            >
+                                0
+                            </div>
+
+                        </div>
+
+                        <div class="stat-icon">
+                            🎓
+                        </div>
+
+                    </div>
+
+
+                    <div class="card stat-card">
+
+                        <div>
+
+                            <div class="stat-label">
+                                Labs
+                            </div>
+
+                            <div
+                                class="stat-value"
+                                id="dashLabs"
+                            >
+                                0
+                            </div>
+
+                        </div>
+
+                        <div class="stat-icon">
+                            🧪
+                        </div>
+
+                    </div>
+
+
+                    <div class="card stat-card">
+
+                        <div>
+
+                            <div class="stat-label">
+                                Total Seats
+                            </div>
+
+                            <div
+                                class="stat-value"
+                                id="dashSeats"
+                            >
+                                0
+                            </div>
+
+                        </div>
+
+                        <div class="stat-icon">
+                            🪑
+                        </div>
+
+                    </div>
+
+
+                    <div class="card stat-card">
+
+                        <div>
+
+                            <div class="stat-label">
+                                Allocated
+                            </div>
+
+                            <div
+                                class="stat-value"
+                                id="dashAllocated"
+                            >
+                                0
+                            </div>
+
+                        </div>
+
+                        <div class="stat-icon">
+                            ✓
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card hero">
+
+                    <div>
+
+                        <div class="hero-title">
+                            LabMatch Allocation System
+                        </div>
+
+                        <div class="hero-text">
+                            Import your student and laboratory records, then generate an optimized seating allocation.
+                        </div>
+
+                        <div class="hero-actions">
+
+                            <button
+                                class="btn btn-primary"
+                                data-go-page="import"
+                            >
+                                Import Data →
+                            </button>
+
+                            <button
+                                class="btn btn-light"
+                                data-go-page="seating"
+                            >
+                                View Seating Plan
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 IMPORT DATA
+            ================================================== -->
+
+            <div
+                class="page"
+                id="import"
+            >
+
+                <div class="page-heading">
+
+                    <h1 class="page-title">
+                        Import Data
+                    </h1>
+
+                    <p class="page-subtitle">
+                        Upload student records and laboratory information.
+                    </p>
+
+                </div>
+
+
+                <div class="upload-grid">
+
+
+                    <!-- STUDENTS -->
+
+                    <div class="card upload-card">
+
+                        <div class="upload-icon">
+                            🎓
+                        </div>
+
+                        <div class="upload-title">
+                            Student Records
+                        </div>
+
+                        <div class="upload-description">
+                            Import your student data. The system analyses the uploaded records and extracts the available student information automatically.
+                        </div>
+
+
+                        <input
+                            type="file"
+                            id="studentFile"
+                            class="file-input"
+                            accept=".csv,.txt,.xlsx,.xls"
+                        >
+
+
+                        <button
+                            class="btn btn-primary upload-button"
+                            id="studentUploadBtn"
+                        >
+                            Choose Student File
+                        </button>
+
+
+                        <div
+                            class="upload-status"
+                            id="studentUploadStatus"
+                        >
+                            No student file selected.
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- LABS -->
+
+                    <div class="card upload-card">
+
+                        <div class="upload-icon">
+                            🧪
+                        </div>
+
+                        <div class="upload-title">
+                            Laboratory Data
+                        </div>
+
+                        <div class="upload-description">
+                            Import laboratory names and available seating capacity. The allocation system will use the available capacity when generating the matching.
+                        </div>
+
+
+                        <input
+                            type="file"
+                            id="labFile"
+                            class="file-input"
+                            accept=".csv,.txt,.xlsx,.xls"
+                        >
+
+
+                        <button
+                            class="btn btn-primary upload-button"
+                            id="labUploadBtn"
+                        >
+                            Choose Lab File
+                        </button>
+
+
+                        <div
+                            class="upload-status"
+                            id="labUploadStatus"
+                        >
+                            No lab file selected.
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="card"
+                    style="margin-top:20px;"
+                >
+
+                    <div class="table-header">
+
+                        <div class="table-title">
+                            Imported Data Summary
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="importSummary"
+                        class="empty-state"
+                    >
+
+                        <div class="empty-icon">
+                            📂
+                        </div>
+
+                        <div class="empty-title">
+                            No data imported yet
+                        </div>
+
+                        <div class="empty-text">
+                            Choose student and lab files above to begin.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 ALLOCATION
+            ================================================== -->
+
+            <div
+                class="page"
+                id="allocation"
+            >
+
+                <div class="page-heading">
+
+                    <h1 class="page-title">
+                        Final Allocation
+                    </h1>
+
+                    <p class="page-subtitle">
+                        Generated student-to-seat assignments using maximum bipartite matching.
+                    </p>
+
+                </div>
+
+
+                <div class="allocation-top">
+
+
+                    <div class="card allocation-stat">
+
+                        <div class="allocation-stat-label">
+                            Students
+                        </div>
+
+                        <div
+                            class="allocation-stat-value"
+                            id="allocStudents"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+
+                    <div class="card allocation-stat">
+
+                        <div class="allocation-stat-label">
+                            Total Capacity
+                        </div>
+
+                        <div
+                            class="allocation-stat-value"
+                            id="allocCapacity"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+
+                    <div class="card allocation-stat">
+
+                        <div class="allocation-stat-label">
+                            Allocated
+                        </div>
+
+                        <div
+                            class="allocation-stat-value"
+                            id="allocCount"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+
+                    <div class="card allocation-stat">
+
+                        <div class="allocation-stat-label">
+                            Unallocated
+                        </div>
+
+                        <div
+                            class="allocation-stat-value"
+                            id="allocUnallocated"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card table-card">
+
+                    <div class="allocation-header">
+
+                        <div>
+
+                            <div class="table-title">
+                                Student-to-Seat Assignments
+                            </div>
+
+                            <div
+                                class="page-subtitle"
+                                style="margin-top:4px;"
+                            >
+                                Each student is assigned to at most one available seat.
+                            </div>
+
+                        </div>
+
+
+                        <button
+                            class="btn btn-primary"
+                            id="reallocateBtn"
+                        >
+                            ⚡ Reallocate
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        id="allocationTableContainer"
+                        class="table-wrap"
+                    >
+
+                        <div class="empty-state">
+
+                            <div class="empty-icon">
+                                ⚡
+                            </div>
+
+                            <div class="empty-title">
+                                Allocation not generated
+                            </div>
+
+                            <div class="empty-text">
+                                Import your data and run the allocation algorithm.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 SEATING PLAN
+            ================================================== -->
+
+            <div
+                class="page"
+                id="seating"
+            >
+
+                <div class="page-heading">
+
+                    <h1 class="page-title">
+                        Seating Plan
+                    </h1>
+
+                    <p class="page-subtitle">
+                        Visualize assigned students inside each laboratory.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+
+                    <div class="seating-controls">
+
+                        <div class="select-label">
+                            Select Lab
+                        </div>
+
+
+                        <select
+                            class="lab-select"
+                            id="labDropdown"
+                        >
+
+                            <option value="">
+                                Run allocation first
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="seating-summary">
+
+
+                        <div class="card lab-info-card">
+
+                            <div class="lab-info-label">
+                                Lab Name
+                            </div>
+
+                            <div
+                                class="lab-info-value"
+                                id="selectedLabName"
+                            >
+                                —
+                            </div>
+
+                        </div>
+
+
+                        <div class="card lab-info-card">
+
+                            <div class="lab-info-label">
+                                Assigned
+                            </div>
+
+                            <div
+                                class="lab-info-value"
+                                id="selectedLabAssigned"
+                            >
+                                0
+                            </div>
+
+                        </div>
+
+
+                        <div class="card lab-info-card">
+
+                            <div class="lab-info-label">
+                                Total Seats
+                            </div>
+
+                            <div
+                                class="lab-info-value"
+                                id="selectedLabCapacity"
+                            >
+                                0
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="view-tabs">
+
+                        <button
+                            class="view-tab active"
+                            data-view="3d"
+                        >
+                            3D View
+                        </button>
+
+                        <button
+                            class="view-tab"
+                            data-view="2d"
+                        >
+                            2D View
+                        </button>
+
+                        <button
+                            class="view-tab"
+                            data-view="list"
+                        >
+                            List View
+                        </button>
+
+                    </div>
+
+
+                    <!-- 3D ROOM -->
+
+                    <div
+                        id="roomView"
+                        class="room-view"
+                    >
+
+                        <div
+                            class="room-wrapper"
+                            id="roomWrapper"
+                        >
+
+                            <div
+                                class="room-title"
+                                id="roomTitle"
+                            >
+                                LAB
+                            </div>
+
+
+                            <div
+                                class="room-floor"
+                                id="roomFloor"
+                            >
+
+                                <div
+                                    class="seat-grid"
+                                    id="seatGrid"
+                                >
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- 2D -->
+
+                    <div
+                        id="twoDView"
+                        class="room-view hidden"
+                    >
+
+                        <div class="room-wrapper">
+
+                            <div
+                                class="room-title"
+                                id="roomTitle2D"
+                            >
+                                LAB
+                            </div>
+
+
+                            <div
+                                id="twoDGrid"
+                                class="seat-grid"
+                            >
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- LIST -->
+
+                    <div
+                        id="listView"
+                        class="list-view"
+                    >
+
+                        <div
+                            id="seatingListContainer"
+                            class="table-wrap"
+                        >
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 FIND STUDENT
+            ================================================== -->
+
+            <div
+                class="page"
+                id="find"
+            >
+
+                <div class="page-heading">
+
+                    <h1 class="page-title">
+                        Find Student
+                    </h1>
+
+                    <p class="page-subtitle">
+                        Search for a student and locate their laboratory and seat.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="search-box">
+
+                        <input
+                            type="text"
+                            id="studentSearch"
+                            class="search-input"
+                            placeholder="Enter roll number or student name..."
+                        >
+
+
+                        <button
+                            class="btn btn-primary"
+                            id="searchStudentBtn"
+                        >
+                            Search
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        id="searchResult"
+                        class="student-result"
+                    >
+
+                        <div class="table-title">
+                            Student Location
+                        </div>
+
+
+                        <div class="result-grid">
+
+
+                            <div class="result-item">
+
+                                <div class="result-label">
+                                    Roll Number
+                                </div>
+
+                                <div
+                                    class="result-value"
+                                    id="resultRoll"
+                                >
+                                </div>
+
+                            </div>
+
+
+                            <div class="result-item">
+
+                                <div class="result-label">
+                                    Student
+                                </div>
+
+                                <div
+                                    class="result-value"
+                                    id="resultName"
+                                >
+                                </div>
+
+                            </div>
+
+
+                            <div class="result-item">
+
+                                <div class="result-label">
+                                    Branch
+                                </div>
+
+                                <div
+                                    class="result-value"
+                                    id="resultBranch"
+                                >
+                                </div>
+
+                            </div>
+
+
+                            <div class="result-item">
+
+                                <div class="result-label">
+                                    Lab
+                                </div>
+
+                                <div
+                                    class="result-value"
+                                    id="resultLab"
+                                >
+                                </div>
+
+                            </div>
+
+
+                            <div class="result-item">
+
+                                <div class="result-label">
+                                    Seat
+                                </div>
+
+                                <div
+                                    class="result-value"
+                                    id="resultSeat"
+                                >
+                                </div>
+
+                            </div>
+
+
+                            <div class="result-item">
+
+                                <div class="result-label">
+                                    Row
+                                </div>
+
+                                <div
+                                    class="result-value"
+                                    id="resultRow"
+                                >
+                                </div>
+
+                            </div>
+
+
+                            <div class="result-item">
+
+                                <div class="result-label">
+                                    Column
+                                </div>
+
+                                <div
+                                    class="result-value"
+                                    id="resultColumn"
+                                >
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="searchEmpty"
+                        class="empty-state"
+                    >
+
+                        <div class="empty-icon">
+                            🔎
+                        </div>
+
+                        <div class="empty-title">
+                            Search for a student
+                        </div>
+
+                        <div class="empty-text">
+                            Enter a roll number or student name above.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 BRANCH ANALYSIS
+            ================================================== -->
+
+            <div
+                class="page"
+                id="analysis"
+            >
+
+                <div class="page-heading">
+
+                    <h1 class="page-title">
+                        Branch Analysis
+                    </h1>
+
+                    <p class="page-subtitle">
+                        Understand how students from different branches are distributed.
+                    </p>
+
+                </div>
+
+
+                <div class="analysis-grid">
+
+
+                    <div class="card">
+
+                        <div class="table-title">
+                            Students by Branch
+                        </div>
+
+                        <div
+                            id="branchStudentChart"
+                            style="margin-top:20px;"
+                        >
+                        </div>
+
+                    </div>
+
+
+                    <div class="card">
+
+                        <div class="table-title">
+                            Allocated Students by Branch
+                        </div>
+
+                        <div
+                            id="branchAllocationChart"
+                            style="margin-top:20px;"
+                        >
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 REPORTS
+            ================================================== -->
+
+            <div
+                class="page"
+                id="report"
+            >
+
+                <div class="page-heading">
+
+                    <h1 class="page-title">
+                        Reports
+                    </h1>
+
+                    <p class="page-subtitle">
+                        Allocation statistics and laboratory utilization.
+                    </p>
+
+                </div>
+
+
+                <div class="report-grid">
+
+
+                    <div class="card report-card">
+
+                        <div class="stat-label">
+                            Total Students
+                        </div>
+
+                        <div
+                            class="report-number"
+                            id="reportStudents"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+
+                    <div class="card report-card">
+
+                        <div class="stat-label">
+                            Total Seats
+                        </div>
+
+                        <div
+                            class="report-number"
+                            id="reportSeats"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+
+                    <div class="card report-card">
+
+                        <div class="stat-label">
+                            Allocation Rate
+                        </div>
+
+                        <div
+                            class="report-number"
+                            id="reportRate"
+                        >
+                            0%
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card table-card">
+
+                    <div class="table-header">
+
+                        <div class="table-title">
+                            Laboratory Utilization
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="labReportContainer"
+                        class="table-wrap"
+                    >
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<div
+    class="toast-container"
+    id="toastContainer"
+></div>
+
+
+
+<script>
+
+
+/* ============================================================
+   CONFIGURATION
+============================================================ */
+
+const API_BASE =
+    "http://localhost:8080/api";
+
+
+/* ============================================================
+   APPLICATION STATE
+============================================================ */
+
+let studentsData = [];
+
+let labsData = [];
+
+let allocationData = [];
+
+let allocationStats = {
+    totalStudents: 0,
+    totalCapacity: 0,
+    allocated: 0,
+    unallocated: 0
+};
+
+let selectedLab = "";
+
+let currentView = "3d";
+
+
+/* ============================================================
+   DOM HELPER
+============================================================ */
+
+function $(id) {
+
+    return document.getElementById(id);
+
+}
+
+
+/* ============================================================
+   TOAST
+============================================================ */
+
+function toast(message, isError = false) {
+
+    const container =
+        $("toastContainer");
+
+    const item =
+        document.createElement("div");
+
+    item.className =
+        "toast" +
+        (isError ? " error" : "");
+
+    item.textContent =
+        message;
+
+    container.appendChild(item);
+
+
+    setTimeout(
+        () => {
+
+            item.remove();
+
+        },
+        3500
+    );
+
+}
+
+
+/* ============================================================
+   SAFE JSON FETCH
+============================================================ */
+
+async function fetchJSON(
+    url,
+    options = {}
+) {
+
+    const response =
+        await fetch(
+            url,
+            options
+        );
+
+
+    let data = null;
+
+    try {
+
+        data =
+            await response.json();
+
+    } catch (error) {
+
+        data = null;
+
+    }
+
+
+    if (!response.ok) {
+
+        const message =
+            data &&
+            data.error
+                ? data.error
+                : `Request failed (${response.status})`;
+
+        throw new Error(message);
+    }
+
+
+    return data;
+}
+
+
+/* ============================================================
+   BACKEND HEALTH
+============================================================ */
+
+async function checkBackend() {
+
+    try {
+
+        const data =
+            await fetchJSON(
+                `${API_BASE}/health`
+            );
+
+
+        if (
+            data &&
+            data.status === "running"
+        ) {
+
+            $("statusDot")
+                .classList.remove(
+                    "offline"
+                );
+
+            $("statusText")
+                .textContent =
+                "Backend online";
+
+        } else {
+
+            throw new Error(
+                "Backend unavailable"
+            );
+
+        }
+
+    } catch (error) {
+
+        $("statusDot")
+            .classList.add(
+                "offline"
+            );
+
+        $("statusText")
+            .textContent =
+            "Backend offline";
+
+    }
+
+}
+
+
+/* ============================================================
+   NAVIGATION
+============================================================ */
+
+function showPage(pageName) {
+
+    document
+        .querySelectorAll(".page")
+        .forEach(
+            page => {
+
+                page.classList.remove(
+                    "active"
+                );
+
+            }
+        );
+
+
+    const target =
+        $(pageName);
+
+
+    if (!target) {
+
+        console.error(
+            "Page not found:",
+            pageName
+        );
+
+        return;
+    }
+
+
+    target.classList.add(
+        "active"
+    );
+
+
+    document
+        .querySelectorAll(".nav-item")
+        .forEach(
+            item => {
+
+                item.classList.remove(
+                    "active"
+                );
+
+
+                if (
+                    item.dataset.page ===
+                    pageName
+                ) {
+
+                    item.classList.add(
+                        "active"
+                    );
+
+                }
+
+            }
+        );
+
+
+    if (
+        pageName ===
+        "seating"
+    ) {
+
+        populateLabDropdown();
+
+        if (selectedLab) {
+
+            renderSelectedLab();
+
+        }
+
+    }
+
+
+    if (
+        pageName ===
+        "analysis"
+    ) {
+
+        generateBranchAnalysis();
+
+    }
+
+
+    if (
+        pageName ===
+        "report"
+    ) {
+
+        generateReport();
+
+    }
+
+}
+
+
+/* ============================================================
+   SIDEBAR NAVIGATION
+============================================================ */
+
+document
+    .querySelectorAll(".nav-item")
+    .forEach(
+        item => {
+
+            item.addEventListener(
+                "click",
+                async function(event) {
+
+                    event.preventDefault();
+
+                    const page =
+                        this.dataset.page;
+
+
+                    if (
+                        page ===
+                        "allocation"
+                    ) {
+
+                        showPage(
+                            "allocation"
+                        );
+
+
+                        if (
+                            studentsData.length > 0 &&
+                            labsData.length > 0
+                        ) {
+
+                            await runAllocation();
+
+                        } else {
+
+                            toast(
+                                "Import students and labs first.",
+                                true
+                            );
+
+                        }
+
+                        return;
+                    }
+
+
+                    showPage(page);
+
+                }
+            );
+
+        }
+    );
+
+
+/* ============================================================
+   DASHBOARD BUTTONS
+============================================================ */
+
+document
+    .querySelectorAll(
+        "[data-go-page]"
+    )
+    .forEach(
+        button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    showPage(
+                        button.dataset.goPage
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+/* ============================================================
+   STUDENT FILE BUTTON
+============================================================ */
+
+$("studentUploadBtn")
+    .addEventListener(
+        "click",
+        () => {
+
+            $("studentFile").click();
+
+        }
+    );
+
+
+/* ============================================================
+   LAB FILE BUTTON
+============================================================ */
+
+$("labUploadBtn")
+    .addEventListener(
+        "click",
+        () => {
+
+            $("labFile").click();
+
+        }
+    );
+
+
+/* ============================================================
+   STUDENT FILE CHANGE
+============================================================ */
+
+$("studentFile")
+    .addEventListener(
+        "change",
+        async function() {
+
+            const file =
+                this.files[0];
+
+
+            if (!file) {
+                return;
+            }
+
+
+            $("studentUploadStatus")
+                .textContent =
+                `Uploading ${file.name}...`;
+
+
+            $("studentUploadStatus")
+                .className =
+                "upload-status";
+
+
+            try {
+
+                const data =
+                    await uploadFile(
+                        "/upload-students",
+                        file
+                    );
+
+
+                studentsData =
+                    data.students ||
+                    [];
+
+
+                $("studentUploadStatus")
+                    .textContent =
+                    `✓ ${studentsData.length} student records imported`;
+
+                $("studentUploadStatus")
+                    .className =
+                    "upload-status success";
+
+
+                updateDashboard();
+
+                updateImportSummary();
+
+                toast(
+                    `${studentsData.length} students imported successfully.`
+                );
+
+            } catch (error) {
+
+                console.error(error);
+
+
+                $("studentUploadStatus")
+                    .textContent =
+                    `✕ ${error.message}`;
+
+
+                $("studentUploadStatus")
+                    .className =
+                    "upload-status error";
+
+
+                toast(
+                    error.message,
+                    true
+                );
+
+            }
+
+        }
+    );
+
+
+/* ============================================================
+   LAB FILE CHANGE
+============================================================ */
+
+$("labFile")
+    .addEventListener(
+        "change",
+        async function() {
+
+            const file =
+                this.files[0];
+
+
+            if (!file) {
+                return;
+            }
+
+
+            $("labUploadStatus")
+                .textContent =
+                `Uploading ${file.name}...`;
+
+
+            $("labUploadStatus")
+                .className =
+                "upload-status";
+
+
+            try {
+
+                const data =
+                    await uploadFile(
+                        "/upload-labs",
+                        file
+                    );
+
+
+                labsData =
+                    data.labs ||
+                    [];
+
+
+                $("labUploadStatus")
+                    .textContent =
+                    `✓ ${labsData.length} laboratories imported`;
+
+                $("labUploadStatus")
+                    .className =
+                    "upload-status success";
+
+
+                updateDashboard();
+
+                updateImportSummary();
+
+                toast(
+                    `${labsData.length} laboratories imported successfully.`
+                );
+
+            } catch (error) {
+
+                console.error(error);
+
+
+                $("labUploadStatus")
+                    .textContent =
+                    `✕ ${error.message}`;
+
+
+                $("labUploadStatus")
+                    .className =
+                    "upload-status error";
+
+
+                toast(
+                    error.message,
+                    true
+                );
+
+            }
+
+        }
+    );
+
+
+/* ============================================================
+   UPLOAD FILE
+============================================================ */
+
+async function uploadFile(
+    endpoint,
+    file
+) {
+
+    const response =
+        await fetch(
+            `${API_BASE}${endpoint}`,
+            {
+                method: "POST",
+
+                headers: {
+                    "X-File-Name":
+                        file.name
+                },
+
+                body: file
+            }
+        );
+
+
+    let data = null;
+
+
+    try {
+
+        data =
+            await response.json();
+
+    } catch (error) {
+
+        data = null;
+
+    }
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            data &&
+            data.error
+                ? data.error
+                : "Upload failed."
+        );
+
+    }
+
+
+    return data;
+}
+
+
+/* ============================================================
+   ALLOCATION
+============================================================ */
+
+async function runAllocation() {
+
+    if (
+        studentsData.length === 0
+    ) {
+
+        toast(
+            "Import student records first.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    if (
+        labsData.length === 0
+    ) {
+
+        toast(
+            "Import lab data first.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    const button =
+        $("reallocateBtn");
+
+
+    if (button) {
+
+        button.disabled = true;
+
+        button.textContent =
+            "⚡ Allocating...";
+
+    }
+
+
+    try {
+
+        const data =
+            await fetchJSON(
+                `${API_BASE}/allocate`,
+                {
+                    method: "POST"
+                }
+            );
+
+
+        allocationData =
+            data.allocations ||
+            [];
+
+
+        allocationStats = {
+
+            totalStudents:
+                Number(
+                    data.totalStudents ||
+                    studentsData.length
+                ),
+
+            totalCapacity:
+                Number(
+                    data.totalCapacity ||
+                    calculateCapacity()
+                ),
+
+            allocated:
+                Number(
+                    data.allocated ||
+                    0
+                ),
+
+            unallocated:
+                Number(
+                    data.unallocated ||
+                    0
+                )
+
+        };
+
+
+        updateDashboard();
+
+        updateAllocationStats();
+
+        renderAllocationTable();
+
+        populateLabDropdown();
+
+        generateBranchAnalysis();
+
+        generateReport();
+
+
+        toast(
+            `Allocation complete: ${allocationStats.allocated}/${allocationStats.totalStudents} students assigned.`
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Allocation error:",
+            error
+        );
+
+
+        toast(
+            `Allocation failed: ${error.message}`,
+            true
+        );
+
+
+    } finally {
+
+        if (button) {
+
+            button.disabled = false;
+
+            button.textContent =
+                "⚡ Reallocate";
+
+        }
+
+    }
+
+}
+
+
+/* ============================================================
+   REALLOCATE BUTTON
+============================================================ */
+
+$("reallocateBtn")
+    .addEventListener(
+        "click",
+        async () => {
+
+            await runAllocation();
+
+            if (
+                allocationData.length > 0
+            ) {
+
+                showPage(
+                    "allocation"
+                );
+
+            }
+
+        }
+    );
+
+
+/* ============================================================
+   DASHBOARD UPDATE
+============================================================ */
+
+function updateDashboard() {
+
+    $("dashStudents")
+        .textContent =
+        studentsData.length;
+
+
+    $("dashLabs")
+        .textContent =
+        labsData.length;
+
+
+    $("dashSeats")
+        .textContent =
+        calculateCapacity();
+
+
+    $("dashAllocated")
+        .textContent =
+        allocationStats.allocated;
+
+
+    updateImportSummary();
+
+}
+
+
+/* ============================================================
+   CAPACITY
+============================================================ */
+
+function calculateCapacity() {
+
+    return labsData.reduce(
+        (
+            total,
+            lab
+        ) => {
+
+            return total +
+                Number(
+                    lab.capacity ||
+                    0
+                );
+
+        },
+        0
+    );
+
+}
+
+
+/* ============================================================
+   IMPORT SUMMARY
+============================================================ */
+
+function updateImportSummary() {
+
+    const container =
+        $("importSummary");
+
+
+    if (
+        studentsData.length === 0 &&
+        labsData.length === 0
+    ) {
+
+        container.innerHTML = `
+
+            <div class="empty-icon">
+                📂
+            </div>
+
+            <div class="empty-title">
+                No data imported yet
+            </div>
+
+            <div class="empty-text">
+                Choose student and lab files above to begin.
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML = `
+
+        <div style="
+            display:grid;
+            grid-template-columns:1fr 1fr 1fr;
+            gap:15px;
+            text-align:left;
+        ">
+
+            <div class="result-item">
+
+                <div class="result-label">
+                    Student Records
+                </div>
+
+                <div class="result-value">
+                    ${studentsData.length}
+                </div>
+
+            </div>
+
+
+            <div class="result-item">
+
+                <div class="result-label">
+                    Laboratories
+                </div>
+
+                <div class="result-value">
+                    ${labsData.length}
+                </div>
+
+            </div>
+
+
+            <div class="result-item">
+
+                <div class="result-label">
+                    Available Seats
+                </div>
+
+                <div class="result-value">
+                    ${calculateCapacity()}
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* ============================================================
+   ALLOCATION STATS
+============================================================ */
+
+function updateAllocationStats() {
+
+    $("allocStudents")
+        .textContent =
+        allocationStats.totalStudents;
+
+
+    $("allocCapacity")
+        .textContent =
+        allocationStats.totalCapacity;
+
+
+    $("allocCount")
+        .textContent =
+        allocationStats.allocated;
+
+
+    $("allocUnallocated")
+        .textContent =
+        allocationStats.unallocated;
+
+}
+
+
+/* ============================================================
+   ALLOCATION TABLE
+============================================================ */
+
+function renderAllocationTable() {
+
+    const container =
+        $("allocationTableContainer");
+
+
+    if (
+        allocationData.length === 0
+    ) {
+
+        container.innerHTML = `
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    ⚡
+                </div>
+
+                <div class="empty-title">
+                    No allocations available
+                </div>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    let rows = "";
+
+
+    allocationData.forEach(
+        allocation => {
+
+            const allocated =
+                allocation.lab &&
+                allocation.lab !==
+                "Unallocated";
+
+
+            rows += `
+
+                <tr>
+
+                    <td>
+                        ${escapeHTML(
+                            allocation.rollNo
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(
+                            allocation.name
+                        )}
+                    </td>
+
+                    <td>
+                        <span class="badge">
+                            ${escapeHTML(
+                                allocation.branch ||
+                                "Unknown"
+                            )}
+                        </span>
+                    </td>
+
+                    <td>
+                        ${
+                            allocated
+                                ? escapeHTML(
+                                    allocation.lab
+                                )
+                                : "—"
+                        }
+                    </td>
+
+                    <td>
+                        ${
+                            allocated
+                                ? escapeHTML(
+                                    allocation.seat
+                                )
+                                : "—"
+                        }
+                    </td>
+
+                    <td>
+
+                        <span class="
+                            badge
+                            ${
+                                allocated
+                                    ? "badge-success"
+                                    : "badge-warning"
+                            }
+                        ">
+
+                            ${
+                                allocated
+                                    ? "Allocated"
+                                    : "Unallocated"
+                            }
+
+                        </span>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+    );
+
+
+    container.innerHTML = `
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Roll No</th>
+
+                    <th>Student</th>
+
+                    <th>Branch</th>
+
+                    <th>Allocated Lab</th>
+
+                    <th>Seat</th>
+
+                    <th>Status</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                ${rows}
+
+            </tbody>
+
+        </table>
+
+    `;
+
+}
+
+
+/* ============================================================
+   ESCAPE HTML
+============================================================ */
+
+function escapeHTML(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* ============================================================
+   LAB DROPDOWN
+============================================================ */
+
+function populateLabDropdown() {
+
+    const dropdown =
+        $("labDropdown");
+
+
+    dropdown.innerHTML = "";
+
+
+    if (
+        labsData.length === 0
+    ) {
+
+        dropdown.innerHTML = `
+
+            <option value="">
+                Import labs first
+            </option>
+
+        `;
+
+        return;
+    }
+
+
+    labsData.forEach(
+        lab => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                lab.name;
+
+
+            option.textContent =
+                lab.name;
+
+
+            dropdown.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    if (
+        selectedLab &&
+        labsData.some(
+            lab =>
+                lab.name ===
+                selectedLab
+        )
+    ) {
+
+        dropdown.value =
+            selectedLab;
+
+    } else {
+
+        selectedLab =
+            labsData[0].name;
+
+        dropdown.value =
+            selectedLab;
+
+    }
+
+
+    renderSelectedLab();
+
+}
+
+
+/* ============================================================
+   LAB DROPDOWN CHANGE
+============================================================ */
+
+$("labDropdown")
+    .addEventListener(
+        "change",
+        function() {
+
+            selectedLab =
+                this.value;
+
+            renderSelectedLab();
+
+        }
+    );
+
+
+/* ============================================================
+   GET STUDENTS OF LAB
+============================================================ */
+
+function getLabStudents(
+    labName
+) {
+
+    return allocationData
+        .filter(
+            allocation =>
+                allocation.lab ===
+                labName
+        );
+
+}
+
+
+/* ============================================================
+   GET LAB
+============================================================ */
+
+function getLab(
+    labName
+) {
+
+    return labsData.find(
+        lab =>
+            lab.name ===
+            labName
+    );
+
+}
+
+
+function getLayout(capacity) {
+
+    let columns = 2;
+
+    if (capacity <= 6) {
+        columns = 2;
+    } else if (capacity <= 80) {
+        columns = 5;
+    } else if (capacity <= 150) {
+        columns = 10;
+    } else {
+        columns = 12;
+    }
+
+    const rows = Math.ceil(capacity / columns);
+
+    return {
+        rows,
+        columns
+    };
+}
+
+
+/* ============================================================
+   PHYSICAL SEAT HELPERS
+============================================================ */
+
+/*
+ * The physical room is FIXED.
+ *
+ * Seat 1 is always row 1 / column 1.
+ * Seat 2 is always row 1 / column 2.
+ * ...
+ *
+ * We never move the physical seat positions.
+ * Only the student occupying a seat changes.
+ */
+
+function getPhysicalSeatNumber(allocation, columns) {
+
+    /*
+     * Best source: backend row + column.
+     */
+    const row = Number(allocation.row);
+    const column = Number(allocation.column);
+
+    if (
+        Number.isInteger(row) &&
+        row > 0 &&
+        Number.isInteger(column) &&
+        column > 0
+    ) {
+        return ((row - 1) * columns) + column;
+    }
+
+    /*
+     * Second source: backend seat field.
+     *
+     * Supports:
+     *   "1"
+     *   "01"
+     *   "Seat-01"
+     *   "Seat 01"
+     *   "Lab-01"
+     */
+    const rawSeat =
+        String(
+            allocation.seat || ""
+        ).trim();
+
+    const match =
+        rawSeat.match(/\d+/);
+
+    if (match) {
+        return Number(match[0]);
+    }
+
+    return null;
+}
+
+
+function buildSeatMap(assigned, columns) {
+
+    const seatMap = new Map();
+
+    assigned.forEach(
+        allocation => {
+
+            const seatNumber =
+                getPhysicalSeatNumber(
+                    allocation,
+                    columns
+                );
+
+            if (
+                seatNumber !== null &&
+                !seatMap.has(seatNumber)
+            ) {
+                seatMap.set(
+                    seatNumber,
+                    allocation
+                );
+            }
+        }
+    );
+
+    return seatMap;
+}
+
+
+function createSeatElement(
+    seatNumber,
+    row,
+    column,
+    student,
+    onClick
+) {
+
+    const wrapper =
+        document.createElement("div");
+
+    wrapper.className =
+        "seat-wrapper" +
+        (
+            student
+                ? ""
+                : " seat-empty"
+        );
+
+    wrapper.dataset.seat =
+        seatNumber;
+
+    wrapper.dataset.row =
+        row;
+
+    wrapper.dataset.column =
+        column;
+
+
+    const desk =
+        document.createElement("div");
+
+    desk.className =
+        "desk";
+
+
+    const label =
+        document.createElement("div");
+
+    label.className =
+        "desk-label";
+
+    label.textContent =
+        student
+            ? (
+                student.rollNo ||
+                student.name ||
+                `Seat ${seatNumber}`
+            )
+            : "AVAILABLE";
+
+
+    if (student) {
+
+        label.title =
+            `${student.rollNo || ""} — ${student.name || ""}`;
+
+    }
+
+
+    desk.appendChild(label);
+
+
+    const chair =
+        document.createElement("div");
+
+    chair.className =
+        "chair";
+
+
+    wrapper.appendChild(desk);
+    wrapper.appendChild(chair);
+
+
+    if (student && onClick) {
+
+        wrapper.addEventListener(
+            "click",
+            () => onClick(
+                student,
+                row,
+                column,
+                seatNumber
+            )
+        );
+
+    }
+
+
+    return wrapper;
+}
+
+
+/* ============================================================
+   RENDER SELECTED LAB
+============================================================ */
+
+function renderSelectedLab() {
+
+    if (
+        !selectedLab
+    ) {
+
+        return;
+
+    }
+
+
+    const lab =
+        getLab(
+            selectedLab
+        );
+
+
+    if (!lab) {
+
+        return;
+
+    }
+
+
+    const assigned =
+        getLabStudents(
+            selectedLab
+        );
+
+
+    const capacity =
+        Number(
+            lab.capacity ||
+            0
+        );
+
+
+    $("selectedLabName")
+        .textContent =
+        lab.name;
+
+
+    $("selectedLabAssigned")
+        .textContent =
+        assigned.length;
+
+
+    $("selectedLabCapacity")
+        .textContent =
+        capacity;
+
+
+    $("roomTitle")
+        .textContent =
+        lab.name;
+
+
+    $("roomTitle2D")
+        .textContent =
+        lab.name;
+
+
+    render3DLayout(
+        assigned,
+        capacity
+    );
+
+
+    render2DLayout(
+        assigned,
+        capacity
+    );
+
+
+    renderSeatingList(
+        assigned
+    );
+
+}
+
+
+function render3DLayout(assigned, capacity) {
+
+    const grid = $("seatGrid");
+
+    grid.innerHTML = "";
+
+    if (capacity <= 0) {
+        grid.innerHTML = `
+            <div class="empty-state">
+                No seating capacity available.
+            </div>
+        `;
+        return;
+    }
+
+    const layout = getLayout(capacity);
+
+    grid.style.gridTemplateColumns =
+        `repeat(${layout.columns}, 112px)`;
+
+    /*
+     * IMPORTANT:
+     * Build the map using the ACTUAL seat returned by the
+     * backend SeatingOptimizer.
+     *
+     * This prevents:
+     *
+     *   assigned[0] -> seat 1
+     *   assigned[1] -> seat 2
+     *
+     * Instead:
+     *
+     *   STU005 -> physical seat 1
+     *   STU011 -> physical seat 4
+     *   STU038 -> physical seat 7
+     *
+     * if that is what the backend returned.
+     */
+    const seatMap =
+        buildSeatMap(
+            assigned,
+            layout.columns
+        );
+
+    for (
+        let seatNumber = 1;
+        seatNumber <= capacity;
+        seatNumber++
+    ) {
+
+        const row =
+            Math.floor(
+                (seatNumber - 1) /
+                layout.columns
+            ) + 1;
+
+        const column =
+            ((seatNumber - 1) %
+                layout.columns) + 1;
+
+        const student =
+            seatMap.get(
+                seatNumber
+            ) || null;
+
+        const wrapper =
+            createSeatElement(
+                seatNumber,
+                row,
+                column,
+                student,
+                (
+                    selectedStudent,
+                    selectedRow,
+                    selectedColumn,
+                    selectedSeat
+                ) => {
+
+                    showStudentPopup(
+                        selectedStudent,
+                        selectedLab,
+                        selectedRow,
+                        selectedColumn,
+                        selectedSeat
+                    );
+
+                }
+            );
+
+        grid.appendChild(
+            wrapper
+        );
+    }
+}
+
+
+function render2DLayout(assigned, capacity) {
+
+    const grid = $("twoDGrid");
+
+    grid.innerHTML = "";
+
+    if (capacity <= 0) {
+        return;
+    }
+
+    const layout = getLayout(capacity);
+
+    grid.style.gridTemplateColumns =
+        `repeat(${layout.columns}, 112px)`;
+
+    const seatMap =
+        buildSeatMap(
+            assigned,
+            layout.columns
+        );
+
+    for (
+        let seatNumber = 1;
+        seatNumber <= capacity;
+        seatNumber++
+    ) {
+
+        const row =
+            Math.floor(
+                (seatNumber - 1) /
+                layout.columns
+            ) + 1;
+
+        const column =
+            ((seatNumber - 1) %
+                layout.columns) + 1;
+
+        const student =
+            seatMap.get(
+                seatNumber
+            ) || null;
+
+        const wrapper =
+            createSeatElement(
+                seatNumber,
+                row,
+                column,
+                student,
+                null
+            );
+
+        grid.appendChild(
+            wrapper
+        );
+    }
+}
+
+
+/* ============================================================
+   SEATING LIST
+============================================================ */
+
+function renderSeatingList(
+    assigned
+) {
+
+    const container =
+        $("seatingListContainer");
+
+
+    if (
+        assigned.length === 0
+    ) {
+
+        container.innerHTML = `
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    🪑
+                </div>
+
+                <div class="empty-title">
+                    No students assigned to this lab
+                </div>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    let rows = "";
+
+
+    assigned.forEach(
+        student => {
+
+            rows += `
+
+                <tr>
+
+                    <td>
+                        ${escapeHTML(
+                            student.rollNo
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(
+                            student.name
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(
+                            student.branch ||
+                            "Unknown"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(
+                            student.seat ||
+                            "—"
+                        )}
+                    </td>
+
+                    <td>
+                        ${
+                            student.row ||
+                            "—"
+                        }
+                    </td>
+
+                    <td>
+                        ${
+                            student.column ||
+                            "—"
+                        }
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+    );
+
+
+    container.innerHTML = `
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Roll No</th>
+                    <th>Student</th>
+                    <th>Branch</th>
+                    <th>Seat</th>
+                    <th>Row</th>
+                    <th>Column</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                ${rows}
+
+            </tbody>
+
+        </table>
+
+    `;
+
+}
+
+
+/* ============================================================
+   VIEW TABS
+============================================================ */
+
+document
+    .querySelectorAll(".view-tab")
+    .forEach(
+        tab => {
+
+            tab.addEventListener(
+                "click",
+                () => {
+
+                    document
+                        .querySelectorAll(
+                            ".view-tab"
+                        )
+                        .forEach(
+                            item =>
+                                item.classList
+                                    .remove(
+                                        "active"
+                                    )
+                        );
+
+
+                    tab.classList.add(
+                        "active"
+                    );
+
+
+                    currentView =
+                        tab.dataset.view;
+
+
+                    if (
+                        currentView ===
+                        "3d"
+                    ) {
+
+                        $("roomView")
+                            .classList
+                            .remove(
+                                "hidden"
+                            );
+
+                        $("twoDView")
+                            .classList
+                            .add(
+                                "hidden"
+                            );
+
+                        $("listView")
+                            .classList
+                            .remove(
+                                "active"
+                            );
+
+                    }
+
+
+                    if (
+                        currentView ===
+                        "2d"
+                    ) {
+
+                        $("roomView")
+                            .classList
+                            .add(
+                                "hidden"
+                            );
+
+                        $("twoDView")
+                            .classList
+                            .remove(
+                                "hidden"
+                            );
+
+                        $("listView")
+                            .classList
+                            .remove(
+                                "active"
+                            );
+
+                    }
+
+
+                    if (
+                        currentView ===
+                        "list"
+                    ) {
+
+                        $("roomView")
+                            .classList
+                            .add(
+                                "hidden"
+                            );
+
+                        $("twoDView")
+                            .classList
+                            .add(
+                                "hidden"
+                            );
+
+                        $("listView")
+                            .classList
+                            .add(
+                                "active"
+                            );
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+
+/* ============================================================
+   STUDENT POPUP
+============================================================ */
+
+function showStudentPopup(
+    student,
+    lab,
+    row,
+    column,
+    seatNumber
+) {
+
+    toast(
+        `${student.rollNo} • ${student.name} • ${lab} • Seat ${seatNumber} • Row ${row}, Column ${column}`
+    );
+
+}
+
+
+/* ============================================================
+   FIND STUDENT
+============================================================ */
+
+$("searchStudentBtn")
+    .addEventListener(
+        "click",
+        findStudent
+    );
+
+
+$("studentSearch")
+    .addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                findStudent();
+
+            }
+
+        }
+    );
+
+
+function findStudent() {
+
+    const query =
+        $("studentSearch")
+            .value
+            .trim()
+            .toLowerCase();
+
+
+    if (!query) {
+
+        toast(
+            "Enter a roll number or student name.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    const result =
+        allocationData.find(
+            student => {
+
+                const roll =
+                    String(
+                        student.rollNo ||
+                        ""
+                    )
+                    .toLowerCase();
+
+
+                const name =
+                    String(
+                        student.name ||
+                        ""
+                    )
+                    .toLowerCase();
+
+
+                return (
+                    roll.includes(query)
+                    ||
+                    name.includes(query)
+                );
+
+            }
+        );
+
+
+    if (!result) {
+
+        $("searchResult")
+            .classList
+            .remove(
+                "show"
+            );
+
+
+        $("searchEmpty")
+            .innerHTML = `
+
+                <div class="empty-icon">
+                    ❌
+                </div>
+
+                <div class="empty-title">
+                    Student not found
+                </div>
+
+                <div class="empty-text">
+                    No allocation matched "${escapeHTML(query)}".
+                </div>
+
+            `;
+
+
+        $("searchEmpty")
+            .style.display =
+            "block";
+
+
+        return;
+
+    }
+
+
+    $("searchEmpty")
+        .style.display =
+        "none";
+
+
+    $("searchResult")
+        .classList
+        .add(
+            "show"
+        );
+
+
+    $("resultRoll")
+        .textContent =
+        result.rollNo ||
+        "—";
+
+
+    $("resultName")
+        .textContent =
+        result.name ||
+        "—";
+
+
+    $("resultBranch")
+        .textContent =
+        result.branch ||
+        "Unknown";
+
+
+    $("resultLab")
+        .textContent =
+        result.lab ||
+        "Unallocated";
+
+
+    $("resultSeat")
+        .textContent =
+        result.seat ||
+        "—";
+
+
+    $("resultRow")
+        .textContent =
+        result.row ||
+        "—";
+
+
+    $("resultColumn")
+        .textContent =
+        result.column ||
+        "—";
+
+
+    /*
+     * Automatically open that lab's seating plan
+     * when the student is allocated.
+     */
+
+    if (
+        result.lab &&
+        result.lab !==
+        "Unallocated"
+    ) {
+
+        selectedLab =
+            result.lab;
+
+        populateLabDropdown();
+
+    }
+
+}
+
+
+/* ============================================================
+   BRANCH ANALYSIS
+============================================================ */
+
+function countBranches(
+    source
+) {
+
+    const counts = {};
+
+
+    source.forEach(
+        student => {
+
+            const branch =
+                student.branch &&
+                String(
+                    student.branch
+                ).trim()
+                    ? String(
+                        student.branch
+                    ).trim()
+                    : "Unknown";
+
+
+            counts[branch] =
+                (
+                    counts[branch] ||
+                    0
+                ) + 1;
+
+        }
+    );
+
+
+    return counts;
+
+}
+
+
+/* ============================================================
+   BRANCH CHART
+============================================================ */
+
+function renderBranchChart(
+    container,
+    counts
+) {
+
+    const entries =
+        Object.entries(
+            counts
+        );
+
+
+    if (
+        entries.length === 0
+    ) {
+
+        container.innerHTML = `
+
+            <div class="empty-state">
+                No branch data available.
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    const maximum =
+        Math.max(
+            ...entries.map(
+                entry =>
+                    entry[1]
+            )
+        );
+
+
+    let html = "";
+
+
+    entries
+        .sort(
+            (
+                a,
+                b
+            ) =>
+                b[1] -
+                a[1]
+        )
+        .forEach(
+            entry => {
+
+                const branch =
+                    entry[0];
+
+                const count =
+                    entry[1];
+
+
+                const percentage =
+                    (
+                        count /
+                        maximum
+                    ) * 100;
+
+
+                html += `
+
+                    <div class="branch-row">
+
+                        <div class="branch-top">
+
+                            <span>
+                                ${escapeHTML(
+                                    branch
+                                )}
+                            </span>
+
+                            <span>
+                                ${count}
+                            </span>
+
+                        </div>
+
+                        <div class="bar-bg">
+
+                            <div
+                                class="bar"
+                                style="
+                                    width:${percentage}%;
+                                "
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+        );
+
+
+    container.innerHTML =
+        html;
+
+}
+
+
+/* ============================================================
+   GENERATE BRANCH ANALYSIS
+============================================================ */
+
+function generateBranchAnalysis() {
+
+    const studentCounts =
+        countBranches(
+            studentsData
+        );
+
+
+    const allocatedStudents =
+        allocationData.filter(
+            student =>
+                student.lab &&
+                student.lab !==
+                "Unallocated"
+        );
+
+
+    const allocationCounts =
+        countBranches(
+            allocatedStudents
+        );
+
+
+    renderBranchChart(
+        $("branchStudentChart"),
+        studentCounts
+    );
+
+
+    renderBranchChart(
+        $("branchAllocationChart"),
+        allocationCounts
+    );
+
+}
+
+
+/* ============================================================
+   REPORT
+============================================================ */
+
+function generateReport() {
+
+    const students =
+        allocationStats.totalStudents ||
+        studentsData.length;
+
+
+    const seats =
+        allocationStats.totalCapacity ||
+        calculateCapacity();
+
+
+    const allocated =
+        allocationStats.allocated;
+
+
+    const rate =
+        students > 0
+            ? (
+                allocated /
+                students
+            ) * 100
+            : 0;
+
+
+    $("reportStudents")
+        .textContent =
+        students;
+
+
+    $("reportSeats")
+        .textContent =
+        seats;
+
+
+    $("reportRate")
+        .textContent =
+        `${rate.toFixed(1)}%`;
+
+
+    renderLabReport();
+
+}
+
+
+/* ============================================================
+   LAB REPORT
+============================================================ */
+
+function renderLabReport() {
+
+    const container =
+        $("labReportContainer");
+
+
+    if (
+        labsData.length === 0
+    ) {
+
+        container.innerHTML = `
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    🧪
+                </div>
+
+                <div class="empty-title">
+                    No laboratory data
+                </div>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    let rows = "";
+
+
+    labsData.forEach(
+        lab => {
+
+            const assigned =
+                getLabStudents(
+                    lab.name
+                ).length;
+
+
+            const capacity =
+                Number(
+                    lab.capacity ||
+                    0
+                );
+
+
+            const utilization =
+                capacity > 0
+                    ? (
+                        assigned /
+                        capacity
+                    ) * 100
+                    : 0;
+
+
+            rows += `
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            ${escapeHTML(
+                                lab.name
+                            )}
+                        </strong>
+                    </td>
+
+                    <td>
+                        ${capacity}
+                    </td>
+
+                    <td>
+                        ${assigned}
+                    </td>
+
+                    <td>
+                        ${
+                            Math.round(
+                                utilization
+                            )
+                        }%
+                    </td>
+
+                    <td>
+
+                        <span class="
+                            badge
+                            ${
+                                assigned > 0
+                                    ? "badge-success"
+                                    : "badge-warning"
+                            }
+                        ">
+
+                            ${
+                                assigned > 0
+                                    ? "Used"
+                                    : "Available"
+                            }
+
+                        </span>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+    );
+
+
+    container.innerHTML = `
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Lab</th>
+                    <th>Capacity</th>
+                    <th>Assigned</th>
+                    <th>Utilization</th>
+                    <th>Status</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                ${rows}
+
+            </tbody>
+
+        </table>
+
+    `;
+
+}
+
+
+/* ============================================================
+   LOAD EXISTING DATA
+============================================================ */
+
+async function loadExistingData() {
+
+    try {
+
+        const students =
+            await fetchJSON(
+                `${API_BASE}/students`
+            );
+
+
+        if (
+            Array.isArray(students)
+        ) {
+
+            studentsData =
+                students;
+
+        } else {
+
+            studentsData =
+                students.students ||
+                [];
+
+        }
+
+
+    } catch (error) {
+
+        console.log(
+            "No existing students loaded."
+        );
+
+    }
+
+
+    try {
+
+        const labs =
+            await fetchJSON(
+                `${API_BASE}/labs`
+            );
+
+
+        if (
+            Array.isArray(labs)
+        ) {
+
+            labsData =
+                labs;
+
+        } else {
+
+            labsData =
+                labs.labs ||
+                [];
+
+        }
+
+
+    } catch (error) {
+
+        console.log(
+            "No existing labs loaded."
+        );
+
+    }
+
+
+    updateDashboard();
+
+}
+
+
+/* ============================================================
+   INITIALIZE
+============================================================ */
+
+async function initialize() {
+
+    await checkBackend();
+
+    await loadExistingData();
+
+}
+
+
+/* ============================================================
+   START APPLICATION
+============================================================ */
+
+initialize();
+
+</script>
+
+</body>
+
+</html>
