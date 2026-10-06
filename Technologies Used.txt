@@ -1,0 +1,18 @@
+Technologies Used
+HTML5 – Used to structure the web pages and application interface.
+CSS3 – Used for styling, layout, responsiveness, and visual design.
+JavaScript – Used to implement the allocation logic and handle user interactions.
+React.js – Used to develop the interactive frontend of the application.
+Node.js – Used for the backend runtime environment.
+Express.js – Used to create backend APIs and handle application requests.
+CSV – Used for uploading and processing student and laboratory datasets.
+Git & GitHub – Used for source-code management and version control.
+Visual Studio Code – Used as the development environment.
+Web Browser – Used for testing and running the application.
+
+Main Technologies
+
+Frontend: React.js, HTML5, CSS3, JavaScript
+Backend: Node.js, Express.js
+Data: CSV
+Development: Visual Studio Code, Git, GitHub
